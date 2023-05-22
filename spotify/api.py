@@ -10,9 +10,9 @@ async def search_song(sp, song_name):
     """
     results = sp.search(q=song_name, limit=1)
     if results['tracks']['items']:
-        return results['tracks']['items'][0]['id']
+        return results['tracks']['items'][0]['id'], results['tracks']['items'][0]['name']
 
-    return None
+    return None, None
 
 
 async def check_song_in_queue(sp, song_id):
