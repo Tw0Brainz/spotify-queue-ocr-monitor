@@ -23,7 +23,7 @@ def calculate_bounding_box(scale: float=1, height_scale: float=1,width_scale: fl
     return sleft, stop, box_width, box_height
 
 
-def create_tinker_window(sleft, stop, box_width, box_height, border_thickness):
+def create_tkinter_window(sleft, stop, box_width, box_height, border_thickness):
     """Create a tkinter window that draws a green bounding box given the arguments.
 
     Args:
