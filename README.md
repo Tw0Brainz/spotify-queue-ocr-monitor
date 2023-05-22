@@ -16,7 +16,8 @@ with the Spotify Web API.
 
 Before you begin, ensure you have met the following requirements:
 
--   Python 3.7 or higher
+-   Written on [Python version 3.11.0](https://www.python.org/downloads/release/python-3110/)\
+    and [pip version 22.3](https://pypi.org/project/pip/).
 -   Spotify account
 -   Registered Spotify App to obtain your `client_id`, `client_secret`,
     and `redirect_uri`. You can register a new App on the [Spotify
@@ -30,7 +31,7 @@ To install Spotify Queue OCR Monitor, follow these steps:
     `git clone https://github.com/tw0brainz/spotify-queue-ocr-monitor.git`
 2.  Navigate to the project directory:\
     `cd spotify-queue-ocr-monitor`
-3.  Create the virtual environment, create the `.env` template file, install dependencies:\
+3.  Create the virtual environment, create the `.env` template file, install dependencies by executing the following:\
     `./setup.bat`
 
 ### Setting Up Spotify API Credentials
@@ -45,8 +46,8 @@ add the following environment variables with your Spotify credentials:
 
 ### Setting Up Tesseract OCR
 
-This project uses Tesseract OCR via pytesseract. Please ensure that
-Tesseract OCR is correctly installed on your system and pytesseract is
+This project uses Tesseract OCR(Version 5.3.1) via pytesseract. Please ensure that
+[Tesseract OCR](https://github.com/UB-Mannheim/tesseract/wiki) is correctly installed on your system and pytesseract is
 correctly configured. If Tesseract OCR is installed at a non-standard
 location, make sure to update the `tesseract_cmd` variable in
 `ocr/process.py`:
