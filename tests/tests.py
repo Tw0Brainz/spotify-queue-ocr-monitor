@@ -1,9 +1,7 @@
-import unittest, sys, os
-import asyncio
-import cv2
-import pyautogui
-import numpy as np
+import unittest, sys, os, asyncio
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from spotify.auth import authenticate
 from spotify.api import search_song, check_song_in_queue, add_song_to_queue
 from ocr.capture import capture_screen
