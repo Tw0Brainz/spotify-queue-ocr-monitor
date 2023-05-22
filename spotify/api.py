@@ -9,10 +9,14 @@ async def search_song(sp, song_name):
         song_id: The Spotify ID of the song, or None if no song was found
     """
     results = sp.search(q=song_name, limit=1)
+    
     if results['tracks']['items']:
-        return results['tracks']['items'][0]['id'], results['tracks']['items'][0]['name']
-
-    return None, None
+        song_id = results['tracks']['items'][0]['id']
+        song_name = results['tracks']['items'][0]['name']
+        song_artist = results['tracks']['items'][0]['artists'][0]['name']
+        return song_id, f"{song_name} by {song_artist}"
+    else:
+        return None, None
 
 
 async def check_song_in_queue(sp, song_id):
