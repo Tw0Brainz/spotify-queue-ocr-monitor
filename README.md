@@ -27,7 +27,7 @@ Before you begin, ensure you have met the following requirements:
 To install Spotify Queue OCR Monitor, follow these steps:
 
 1.  Clone the repo:\
-    `git clone https://github.com/yourusername/spotify-queue-ocr-monitor.git`
+    `git clone https://github.com/tw0brainz/spotify-queue-ocr-monitor.git`
 2.  Navigate to the project directory:\
     `cd spotify-queue-ocr-monitor`
 3.  Create the virtual environment, create the `.env` template file, install dependencies:\
@@ -60,7 +60,11 @@ OCR executable.
 ## Usage
 
 To run Spotify Queue OCR Monitor, execute:\
+<<<<<<< HEAD
 `./run.bat`
+=======
+`run.bat`
+>>>>>>> 357cec40f2a3d0fd4ef8dca0574c0b2b6c12dd7f
 
 By default, the program scans the center of the screen every 3 seconds.
 The bounding box parameters and the capture rate can be adjusted in the
