@@ -60,11 +60,7 @@ OCR executable.
 ## Usage
 
 To run Spotify Queue OCR Monitor, execute:\
-<<<<<<< HEAD
 `./run.bat`
-=======
-`run.bat`
->>>>>>> 357cec40f2a3d0fd4ef8dca0574c0b2b6c12dd7f
 
 By default, the program scans the center of the screen every 3 seconds.
 The bounding box parameters and the capture rate can be adjusted in the
@@ -92,7 +88,7 @@ functionalities are defined in the `ocr` module.
 
 You can run tests to validate the OCR and Spotify functionalities
 using:\
-`python test.py`
+`./tests.bat`
 
 ## Contributing to Spotify Queue OCR Monitor
 
