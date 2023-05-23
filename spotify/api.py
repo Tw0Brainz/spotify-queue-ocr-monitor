@@ -8,7 +8,11 @@ async def search_song(sp, song_name):
     Returns:
         song_id: The Spotify ID of the song, or None if no song was found
     """
-    results = sp.search(q=song_name, limit=1)
+    try:
+        results = sp.search(q=song_name, limit=1)
+    except Exception as e:
+        print(f"Error searching for {song_name}: {e}")
+        return None, None
     
     if results['tracks']['items']:
         song_id = results['tracks']['items'][0]['id']
