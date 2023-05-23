@@ -10,25 +10,25 @@ def calculate_bounding_box(scale: float=1, height_scale: float=1,width_scale: fl
         width_scale (float): Scaling factor for the size of the width
 
     Returns:
-        sleft (int): The horizontal coordinate of the top-left corner of the bounding box
-        stop (int): The vertical coordinate of the top-left corner of the bounding box
+        left (int): The horizontal coordinate of the top-left corner of the bounding box
+        top (int): The vertical coordinate of the top-left corner of the bounding box
         box_width (int): The width of the bounding box
         box_height (int): The height of the bounding box
     """
     monitor = screeninfo.get_monitors()[0]
     box_width = int(round(monitor.width * scale * width_scale))
     box_height = int(round(monitor.height * scale * height_scale))
-    sleft = int(round((monitor.width - box_width) // 2))
-    stop = int(round((monitor.height - box_height) // 2))
-    return sleft, stop, box_width, box_height
+    left = int(round((monitor.width - box_width) // 2))
+    top = int(round((monitor.height - box_height) // 2))
+    return left, top, box_width, box_height
 
 
-def create_tkinter_window(sleft, stop, box_width, box_height, border_thickness):
+def create_tkinter_window(left, top, box_width, box_height, border_thickness):
     """Create a tkinter window that draws a green bounding box given the arguments.
 
     Args:
-        sleft (int): The horizontal coordinate of the top-left corner of the bounding box
-        stop (int): The vertical coordinate of the top-left corner of the bounding box
+        left (int): The horizontal coordinate of the top-left corner of the bounding box
+        top (int): The vertical coordinate of the top-left corner of the bounding box
         box_width (int): The width of the bounding box
         box_height (int): The height of the bounding box
         border_thickness (int): The thickness of the border of the bounding box
@@ -38,7 +38,7 @@ def create_tkinter_window(sleft, stop, box_width, box_height, border_thickness):
     """
     root = tk.Tk()
     root.overrideredirect(True)
-    root.geometry(f"{int(box_width)}x{int(box_height)}+{int(sleft)}+{int(stop)}")
+    root.geometry(f"{int(box_width)}x{int(box_height)}+{int(left)}+{int(top)}")
     root.lift()
     root.wm_attributes("-topmost", True)
     root.wm_attributes("-disabled", True)
