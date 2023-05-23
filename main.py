@@ -1,4 +1,4 @@
-import asyncio
+import asyncio, os
 from ocr.capture import capture_screen
 from ocr.process import process_image
 from spotify.auth import authenticate
@@ -14,7 +14,7 @@ async def main():
 
     # Calculate the bounding box parameters and create the overlay window
     sleft, stop, box_width, box_height = calculate_bounding_box(0.3, height_scale=0.5, width_scale=0.7)
-    root = create_tkinter_window(sleft, stop, box_width, box_height, 1)
+    root = create_tkinter_window(sleft, stop, box_width, box_height, 3)
 
     # Variables to keep track of the current song
     prev_song_name = None
@@ -46,9 +46,24 @@ async def main():
             # Update the Tkinter window
             root.update()
 
+            message_filename = 'message.txt'
+            if os.path.exists(message_filename):
+                with open(message_filename, 'r') as f:
+                    custom_message = f.read().strip()
+                
+                # # Clear the message file after reading it
+                # with open(message_filename, 'w') as f:
+                #     pass
+            else:
+                custom_message = ""
+
             # Update the chat in VRChat and sleep for 2.5 seconds
-            # vrc_notifier.send_custom_message(f"Please help me test this. Type @ <song name> in front of me. Last Added: {prev_spotify_song_info}")
-            await asyncio.sleep(1)
+            if custom_message:
+                vrc_notifier.send_custom_message(custom_message)
+            else:
+                vrc_notifier.send_custom_message(f"Please help me test this. Type @@ <song name> in front of me. Last Added: {prev_spotify_song_info}")
+            
+            await asyncio.sleep(2.5)
 
     except KeyboardInterrupt:
         print("Program interrupted.")
