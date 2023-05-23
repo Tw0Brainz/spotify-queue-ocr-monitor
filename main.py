@@ -47,13 +47,14 @@ async def main():
             root.update()
 
             message_filename = 'vrc/message.txt'
+            clear_after_read = False
             if os.path.exists(message_filename):
                 with open(message_filename, 'r') as f:
                     custom_message = f.read().strip()
-                
-                # Clear the message file after reading it
-                with open(message_filename, 'w') as f:
-                    pass
+                if clear_after_read:
+                    # Clear the message file after reading it
+                    with open(message_filename, 'w') as f:
+                        pass
             else:
                 custom_message = ""
 
@@ -61,13 +62,12 @@ async def main():
             if custom_message:
                 vrc_notifier.send_custom_message(custom_message)
             else:
-                vrc_notifier.send_custom_message(f"Please help me test this. Type @@ <song name> in front of me. Last Added: {prev_spotify_song_info}")
+                vrc_notifier.send_custom_message(f"Please help me test this. Type: \"@@song name\" in front of me. Last Added: {prev_spotify_song_info}")
             
             await asyncio.sleep(2.5)
 
     except KeyboardInterrupt:
         print("Program interrupted.")
-        vrc_notifier.send_custom_message("I killed the program with my bare hands, be back in a sec")
         
     finally:
         root.destroy()
