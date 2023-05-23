@@ -14,7 +14,7 @@ async def main():
 
     # Calculate the bounding box parameters and create the overlay window
     left, top, box_width, box_height = calculate_bounding_box(0.3, height_scale=0.5, width_scale=0.7)
-    root = create_tkinter_window(left, top, box_width, box_height, 3)
+    root = create_tkinter_window(left, top, box_width, box_height, border_thickness=3)
 
     # Variables to keep track of the current song
     prev_song_name = None
