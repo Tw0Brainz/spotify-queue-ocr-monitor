@@ -13,6 +13,6 @@ def process_image(screenshot):
     pattern = r'@ (.*)'
 
     match = re.search(pattern, text)
-    if match and match.group(1).strip() != "<song name>":
+    if match and "song name" not in match.group(1).strip():
         return match.group(1)
     return None
