@@ -22,10 +22,10 @@ class TestSpotifyAPI(unittest.TestCase):
     
     def setUp(self):
         self.loop = asyncio.get_event_loop()
-        self.sp = self.loop.run_until_complete(authenticate())
+        self.sp = authenticate()
 
     def test_search_song(self):
-        result = self.loop.run_until_complete(search_song(self.sp, 'never gonna give you up rick astley'))
+        result = (self.sp, 'never gonna give you up rick astley')
         if isinstance(result, tuple):
             song_id = result[0]
         else:
@@ -37,10 +37,10 @@ class TestSpotifyAPI(unittest.TestCase):
         # This test is a bit tricky as it depends on the user's Spotify queue
         # We are assuming here that you have a song in your library you can add to the queue
         song_id = '4cOdK2wGLETKBW3PvgPWqT'  # Replace with an actual song ID
-        added = self.loop.run_until_complete(add_song_to_queue(self.sp, song_id))
+        added = add_song_to_queue(self.sp, song_id)
         self.assertIsNone(added)  # add_song_to_queue doesn't return anything, so we expect None
 
-        in_queue = self.loop.run_until_complete(check_song_in_queue(self.sp, song_id))
+        in_queue = check_song_in_queue(self.sp, song_id)
         self.assertIsNotNone(in_queue)  # check_song_in_queue returns a boolean, so we expect something other than None
 
 if __name__ == "__main__":

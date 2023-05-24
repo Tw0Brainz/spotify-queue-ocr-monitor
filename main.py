@@ -1,4 +1,5 @@
-import asyncio, os
+import os
+import time
 from ocr.capture import capture_screen
 from ocr.process import process_image
 from spotify.auth import authenticate
@@ -12,33 +13,34 @@ edge_playback_location = os.path.join(venv_location, "Scripts", "edge-playback")
 command = [edge_playback_location, "-f", ".\\vrc\\message.txt", "--volume=-25%", "--rate=+50%"]
 os.startfile("vrc\\message.txt")
 
-async def main():
+def main():
     # Authenticate user for Spotify API and initialize OSCNotifier
-    sp = await authenticate()
+    sp = authenticate()
     vrc_notifier = OSCNotifier()
 
     # Calculate the bounding box parameters and create the overlay window
     left, top, box_width, box_height = calculate_bounding_box(scale=0.3, height_scale=0.5, width_scale=0.7)
     root = create_tkinter_window(left, top, box_width, box_height, border_thickness=3)
+    root.update()
 
     # Variables to keep track of the current song
     prev_song_name = None
     prev_spotify_song_info = None
-
     try:
         while True:
             # Capture screenshot and process it with OCR to extract song name
             screenshot = capture_screen(left, top, box_width, box_height)
             song_name = process_image(screenshot)
+            print(song_name)
 
             # If a new song is detected, search for it on Spotify and add to queue if not already there
             if song_name and (song_name != prev_song_name):
                 print(f"Song name detected: {song_name}")
-                song_id, spotify_song_info = await search_song(sp, song_name)
+                song_id, spotify_song_info = search_song(sp, song_name)
 
-                if song_id and not await check_song_in_queue(sp, song_id):
+                if song_id and not check_song_in_queue(sp, song_id):
                     print(f"Adding {spotify_song_info} to queue...")
-                    await add_song_to_queue(sp, song_id)
+                    add_song_to_queue(sp, song_id)
                     print(f"{spotify_song_info} added to queue!")
                     vrc_notifier.notify_song_added(spotify_song_info)
                 else:
@@ -47,9 +49,6 @@ async def main():
 
                 # Update current song
                 prev_song_name, prev_spotify_song_info = song_name, spotify_song_info
-
-            # Update the Tkinter window
-            root.update()
 
             message_filename = 'vrc/message.txt'
             clear_after_read = True
@@ -72,7 +71,7 @@ async def main():
             else:
                 vrc_notifier.send_custom_message(f"Please help me test this. Type: \"@@song name\" in front of me. Last Added: {prev_spotify_song_info}")
             
-            await asyncio.sleep(2.5)
+            time.sleep(2.5)
 
     except KeyboardInterrupt:
         print("Program interrupted.")
@@ -81,4 +80,4 @@ async def main():
         root.destroy()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

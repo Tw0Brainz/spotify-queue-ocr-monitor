@@ -2,7 +2,7 @@ import spotipy, os
 from dotenv import load_dotenv
 from spotipy.oauth2 import SpotifyOAuth
 
-async def authenticate():
+def authenticate():
     """Authenticate with Spotify API.
 
     Returns:

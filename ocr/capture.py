@@ -16,5 +16,4 @@ def capture_screen(left, top, box_width, box_height):
     image = image.convert('1')
     image = image.filter(ImageFilter.MedianFilter())
 
-
     return image
