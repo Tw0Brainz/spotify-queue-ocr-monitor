@@ -25,7 +25,11 @@ class TestSpotifyAPI(unittest.TestCase):
         self.sp = self.loop.run_until_complete(authenticate())
 
     def test_search_song(self):
-        song_id = self.loop.run_until_complete(search_song(self.sp, 'never gonna give you up rick astley'))
+        result = self.loop.run_until_complete(search_song(self.sp, 'never gonna give you up rick astley'))
+        if isinstance(result, tuple):
+            song_id = result[0]
+        else:
+            song_id = result
         # This will pass if 'never gonna give you up rick astley' exists on Spotify
         self.assertIsInstance(song_id, str)
 
