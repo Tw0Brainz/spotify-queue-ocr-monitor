@@ -56,5 +56,5 @@ async def add_song_to_queue(sp, song_id):
         sp.add_to_queue(song_id)
     except Exception as e:
         print(f"Error adding song to queue: {e}")
-        print(sp.playback_state())
+        print(sp.current_playback())
         return
