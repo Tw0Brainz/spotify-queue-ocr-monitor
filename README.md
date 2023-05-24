@@ -85,6 +85,10 @@ The program uses OpenCV and Tesseract OCR via pytesseract to capture
 screenshots and extract text from them. The image capture and processing
 functionalities are defined in the `ocr` module.
 
+### VRC OSC Chatbox Notifications
+
+The program uses Python-OSC to send chatbox messages providing status updates as well as how to request a song. The default parameters for the vrc_osc_notifier should work for most but you can pass in a string IP(default:"127.0.0.1" and integer Port number(default:9000) if you've changed your vrc launch options for the OSC server 
+
 ## Running Tests
 
 You can run tests to validate the OCR and Spotify functionalities
