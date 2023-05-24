@@ -24,7 +24,7 @@ async def search_song(sp, song_name):
 
 
 async def check_song_in_queue(sp, song_id):
-    """Check if a song is already in the user's queue.
+    """Check if a song is already in the user's queue. This will throw an error if the user is not playing a song and their queue is empty.
 
     Args:
         sp: spotipy.Spotify object
@@ -36,8 +36,12 @@ async def check_song_in_queue(sp, song_id):
     
     # Generate a list of the user's queue items and check the song ID against it
     queue = sp.queue()
-    queue_check = [item['id'] for item in queue['queue']]
-    queue_check.append(queue['currently_playing']['id'])
+
+    if not queue['queue'] and not queue['currently_playing']:
+        raise Exception("Please make sure Spotify is open and a song is playing")
+    
+    queue_check = [item['id'] for item in queue['queue']] + [queue['currently_playing']['id']]
+    
     return song_id in queue_check
 
 
@@ -48,4 +52,9 @@ async def add_song_to_queue(sp, song_id):
         sp: spotipy.Spotify object
         song_id: The Spotify ID of the song
     """
-    sp.add_to_queue(song_id)
+    try:
+        sp.add_to_queue(song_id)
+    except Exception as e:
+        print(f"Error adding song to queue: {e}")
+        print(sp.playback_state())
+        return
