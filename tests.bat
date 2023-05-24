@@ -2,5 +2,5 @@
 call python -m venv venv
 call venv\Scripts\activate.bat
 call pip install -r requirements.txt -q
-call python main.py
+call python tests/tests.py
 pause
