@@ -1,11 +1,11 @@
 from mss import mss
 from PIL import Image, ImageFilter, ImageEnhance
 
-def capture_screen(sleft, stop, box_width, box_height):
+def capture_screen(left, top, box_width, box_height):
     
     sct = mss()
     # capture screenshot
-    screenshot = sct.grab({'top':stop,'left':sleft,'width':box_width,'height':box_height})
+    screenshot = sct.grab({'top':top,'left':left,'width':box_width,'height':box_height})
     
     # Pre-process image for OCR
     image = Image.frombytes('RGB', screenshot.size, screenshot.bgra, 'raw', 'BGRX')
