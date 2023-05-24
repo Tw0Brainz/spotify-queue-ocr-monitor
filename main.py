@@ -5,7 +5,12 @@ from spotify.auth import authenticate
 from spotify.api import search_song, check_song_in_queue, add_song_to_queue
 from gui.overlay import create_tkinter_window, calculate_bounding_box
 from vrc.osc_notifier import OSCNotifier
+import subprocess
 
+venv_location = os.path.join(os.path.dirname(os.path.abspath(__file__)), "venv")
+edge_playback_location = os.path.join(venv_location, "Scripts", "edge-playback")
+command = [edge_playback_location, "-f", ".\\vrc\\message.txt", "--volume=-25%", "--rate=+50%"]
+os.startfile("vrc\\message.txt")
 
 async def main():
     # Authenticate user for Spotify API and initialize OSCNotifier
@@ -47,10 +52,13 @@ async def main():
             root.update()
 
             message_filename = 'vrc/message.txt'
-            clear_after_read = False
+            clear_after_read = True
             if os.path.exists(message_filename):
                 with open(message_filename, 'r') as f:
                     custom_message = f.read().strip()
+                    if custom_message != "":
+                        subprocess.Popen(command, shell=True)
+                        await asyncio.sleep(0.5)
                 if clear_after_read:
                     # Clear the message file after reading it
                     with open(message_filename, 'w') as f:
