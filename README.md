@@ -1,4 +1,4 @@
-B# Spotify Queue OCR Monitor
+# Spotify Queue OCR Monitor
 
 Spotify Queue OCR Monitor is a Python project that uses optical
 character recognition (OCR) to monitor a designated area of your screen
