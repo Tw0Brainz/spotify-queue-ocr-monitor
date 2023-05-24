@@ -6,10 +6,13 @@ if errorlevel 1 (
   call python -m venv venv
   call venv\Scripts\activate.bat
   call pip install -r requirements.txt -q
-  python main.py
+  call python main.py
+  pause
+  exit /b
 )
 
 call py -3.11 -m venv venv
 call venv\Scripts\activate.bat
 call pip install -r requirements.txt -q
-python main.py
+call python main.py
+pause
