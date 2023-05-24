@@ -4,7 +4,7 @@ from ocr.process import process_image
 from spotify.auth import authenticate
 from spotify.api import search_song, check_song_in_queue, add_song_to_queue
 from gui.overlay import create_tkinter_window, calculate_bounding_box
-from vrc.vrc_osc_notifier import OSCNotifier
+from vrc.osc_notifier import OSCNotifier
 
 
 async def main():
@@ -13,8 +13,8 @@ async def main():
     vrc_notifier = OSCNotifier()
 
     # Calculate the bounding box parameters and create the overlay window
-    sleft, stop, box_width, box_height = calculate_bounding_box(0.3, height_scale=0.5, width_scale=0.7)
-    root = create_tkinter_window(sleft, stop, box_width, box_height, 3)
+    left, top, box_width, box_height = calculate_bounding_box(0.3, height_scale=0.5, width_scale=0.7)
+    root = create_tkinter_window(left, top, box_width, box_height, 3)
 
     # Variables to keep track of the current song
     prev_song_name = None
@@ -23,7 +23,7 @@ async def main():
     try:
         while True:
             # Capture screenshot and process it with OCR to extract song name
-            screenshot = capture_screen(sleft, stop, box_width, box_height)
+            screenshot = capture_screen(left, top, box_width, box_height)
             song_name = process_image(screenshot)
 
             # If a new song is detected, search for it on Spotify and add to queue if not already there
@@ -46,14 +46,14 @@ async def main():
             # Update the Tkinter window
             root.update()
 
-            message_filename = 'message.txt'
+            message_filename = 'vrc/message.txt'
             if os.path.exists(message_filename):
                 with open(message_filename, 'r') as f:
                     custom_message = f.read().strip()
                 
-                # # Clear the message file after reading it
-                # with open(message_filename, 'w') as f:
-                #     pass
+                # Clear the message file after reading it
+                with open(message_filename, 'w') as f:
+                    pass
             else:
                 custom_message = ""
 
