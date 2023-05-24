@@ -45,5 +45,5 @@ def create_tkinter_window(sleft, stop, box_width, box_height, border_thickness):
     root.wm_attributes("-transparentcolor", "white")
     canvas = tk.Canvas(root, width=box_width, height=box_height, bg='white', highlightthickness=0)
     canvas.pack()
-    canvas.create_rectangle(0, 0, box_width - 1, box_height - 1, outline="green", width=border_thickness)
+    canvas.create_rectangle(0, 0, box_width - 1, box_height - 1, outline="yellow", width=border_thickness)
     return root
