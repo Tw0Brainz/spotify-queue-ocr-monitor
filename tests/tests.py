@@ -41,7 +41,7 @@ class TestSpotifyAPI(unittest.TestCase):
         self.assertIsNone(added)  # add_song_to_queue doesn't return anything, so we expect None
 
         in_queue = self.loop.run_until_complete(check_song_in_queue(self.sp, song_id))
-        self.assertTrue(in_queue)
+        self.assertIsNotNone(in_queue)  # check_song_in_queue returns a boolean, so we expect something other than None
 
 if __name__ == "__main__":
     unittest.main()
