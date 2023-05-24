@@ -27,7 +27,7 @@ Before you begin, ensure you have met the following requirements:
 To install Spotify Queue OCR Monitor, follow these steps:
 
 1.  Clone the repo:\
-    `git clone https://github.com/yourusername/spotify-queue-ocr-monitor.git`
+    `git clone https://github.com/tw0brainz/spotify-queue-ocr-monitor.git`
 2.  Navigate to the project directory:\
     `cd spotify-queue-ocr-monitor`
 3.  Create the virtual environment, create the `.env` template file, install dependencies:\
