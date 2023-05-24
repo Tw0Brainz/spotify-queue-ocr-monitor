@@ -1,4 +1,4 @@
-async def search_song(sp, song_name):
+def search_song(sp, song_name):
     """Search for a song on Spotify.
 
     Args:
@@ -23,7 +23,7 @@ async def search_song(sp, song_name):
         return None, None
 
 
-async def check_song_in_queue(sp, song_id):
+def check_song_in_queue(sp, song_id):
     """Check if a song is already in the user's queue. This will throw an error if the user is not playing a song and their queue is empty.
 
     Args:
@@ -45,7 +45,7 @@ async def check_song_in_queue(sp, song_id):
     return song_id in queue_check
 
 
-async def add_song_to_queue(sp, song_id):
+def add_song_to_queue(sp, song_id):
     """Add a song to the user's queue.
 
     Args:
