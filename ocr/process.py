@@ -3,7 +3,7 @@ import re
 
 def process_image(screenshot):
     # set the path to the tesseract executable
-    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    # pytesseract.pytesseract.tesseract_cmd = r'path_to_your_tesseract_exe'
     
     # apply OCR on the screenshot
     # --psm 6 is the page segmentation mode for a single uniform block of text
