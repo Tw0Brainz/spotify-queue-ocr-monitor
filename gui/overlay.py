@@ -1,11 +1,13 @@
 import tkinter as tk
 import screeninfo
 
-def calculate_bounding_box(scale):
+def calculate_bounding_box(scale: float=1, height_scale: float=1,width_scale: float=1):
     """Calculate the parameters of a bounding box at the center of the main monitor.
 
     Args:
         scale (float): Scaling factor for the size of the bounding box
+        height_scale (float): Scaling factor for the size of the height
+        width_scale (float): Scaling factor for the size of the width
 
     Returns:
         sleft (int): The horizontal coordinate of the top-left corner of the bounding box
@@ -14,11 +16,12 @@ def calculate_bounding_box(scale):
         box_height (int): The height of the bounding box
     """
     monitor = screeninfo.get_monitors()[0]
-    sleft = monitor.width // 2 - (monitor.width * scale) // 2
-    stop = monitor.height // 2 - (monitor.height * scale) // 2
-    box_width = monitor.width * scale
-    box_height = monitor.height * scale
+    box_width = int(round(monitor.width * scale * width_scale))
+    box_height = int(round(monitor.height * scale * height_scale))
+    sleft = int(round((monitor.width - box_width) // 2))
+    stop = int(round((monitor.height - box_height) // 2))
     return sleft, stop, box_width, box_height
+
 
 def create_tinker_window(sleft, stop, box_width, box_height, border_thickness):
     """Create a tkinter window that draws a green bounding box given the arguments.
