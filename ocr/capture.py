@@ -1,15 +1,20 @@
-import cv2
-import pyautogui
-import numpy as np
+from mss import mss
+from PIL import Image, ImageFilter, ImageEnhance
 
 def capture_screen(sleft, stop, box_width, box_height):
-    # capture screenshot
-    screenshot = pyautogui.screenshot(region=(sleft, stop, box_width, box_height))
     
-    # convert the image into numpy array representation
-    screenshot = np.array(screenshot)
+    sct = mss()
+    # capture screenshot
+    screenshot = sct.grab({'top':stop,'left':sleft,'width':box_width,'height':box_height})
+    
+    # Pre-process image for OCR
+    image = Image.frombytes('RGB', screenshot.size, screenshot.bgra, 'raw', 'BGRX')
+    enhancer = ImageEnhance.Contrast(image)
+    image = enhancer.enhance(2)
+    
+    # To B&W
+    image = image.convert('1')
+    image = image.filter(ImageFilter.MedianFilter())
 
-    # convert the BGR image into RGB image
-    screenshot = cv2.cvtColor(screenshot, cv2.COLOR_BGR2RGB)
 
-    return screenshot
+    return image
