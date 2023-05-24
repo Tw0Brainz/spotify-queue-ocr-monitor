@@ -57,7 +57,7 @@ def main():
                     custom_message = f.read().strip()
                     if custom_message != "":
                         subprocess.Popen(command, shell=True)
-                        await asyncio.sleep(0.5)
+                        time.sleep(0.5)
                 if clear_after_read:
                     # Clear the message file after reading it
                     with open(message_filename, 'w') as f:
