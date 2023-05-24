@@ -88,7 +88,7 @@ functionalities are defined in the `ocr` module.
 
 You can run tests to validate the OCR and Spotify functionalities
 using:\
-`python test.py`
+`./tests.bat`
 
 ## Contributing to Spotify Queue OCR Monitor
 
