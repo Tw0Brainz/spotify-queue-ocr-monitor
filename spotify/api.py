@@ -27,7 +27,10 @@ async def check_song_in_queue(sp, song_id):
     """
     
     # Generate a list of the user's queue items and check the song ID against it
-    return song_id in [item['id'] for item in sp.queue()['queue']]
+    queue = sp.queue()
+    queue_check = [item['id'] for item in queue['queue']]
+    queue_check.append(queue['currently_playing']['id'])
+    return song_id in queue_check
 
 
 async def add_song_to_queue(sp, song_id):
