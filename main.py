@@ -1,83 +1,78 @@
-import os
-import time
-from ocr.capture import capture_screen
-from ocr.process import process_image
+from PyQt5.QtCore import QTimer, pyqtSignal, QObject
+from PyQt5.QtWidgets import QApplication
+from vrc.osc_notifier import OSCNotifier
+from gui.overlay import Overlay, ChatBox, calculate_bounding_box
+from multiprocessing import Process
 from spotify.auth import authenticate
 from spotify.api import search_song, check_song_in_queue, add_song_to_queue
-from gui.overlay import create_tkinter_window, calculate_bounding_box
-from vrc.osc_notifier import OSCNotifier
-import subprocess
+from ocr.capture import capture_screen
+from ocr.process import process_image
+import sys, subprocess, time, os
 
-venv_location = os.path.join(os.path.dirname(os.path.abspath(__file__)), "venv")
-edge_playback_location = os.path.join(venv_location, "Scripts", "edge-playback")
-command = [edge_playback_location, "-f", ".\\vrc\\message.txt", "--volume=-25%", "--rate=+50%"]
-os.startfile("vrc\\message.txt")
+SCALE, HEIGHT_SCALE, WIDTH_SCALE = 0.5,1.0,1.0
 
-def main():
-    # Authenticate user for Spotify API and initialize OSCNotifier
-    sp = authenticate()
-    vrc_notifier = OSCNotifier()
+class TTSPlayer:
+    def __init__(self, text):
+        self.text = text
+        self.venv_location = os.path.join(os.path.dirname(os.path.abspath(__file__)), "venv")
+        self.edge_playback_location = os.path.join(self.venv_location, "Scripts", "edge-playback")
+        self.command = [self.edge_playback_location, "-t", self.text]
 
-    # Calculate the bounding box parameters and create the overlay window
-    left, top, box_width, box_height = calculate_bounding_box(scale=0.3, height_scale=0.5, width_scale=0.7)
-    root = create_tkinter_window(left, top, box_width, box_height, border_thickness=3)
-    root.update()
+    def play_text(self):
+        # uses a separate process to play the text
+        subprocess.Popen(self.command)
 
-    # Variables to keep track of the current song
-    prev_song_name = None
-    prev_spotify_song_info = None
-    try:
-        while True:
-            # Capture screenshot and process it with OCR to extract song name
-            screenshot = capture_screen(left, top, box_width, box_height)
-            song_name = process_image(screenshot)
-            print(song_name)
+    def play_in_background(self):
+        # create a new process for play_text function
+        p = Process(target=self.play_text)
+        p.start()
 
-            # If a new song is detected, search for it on Spotify and add to queue if not already there
-            if song_name and (song_name != prev_song_name):
-                print(f"Song name detected: {song_name}")
-                song_id, spotify_song_info = search_song(sp, song_name)
+class MainApp(QObject):
+    new_song_signal = pyqtSignal(str)
 
-                if song_id and not check_song_in_queue(sp, song_id):
-                    print(f"Adding {spotify_song_info} to queue...")
-                    add_song_to_queue(sp, song_id)
-                    print(f"{spotify_song_info} added to queue!")
-                    vrc_notifier.notify_song_added(spotify_song_info)
-                else:
-                    print(f"{spotify_song_info} is already in queue!")
-                    vrc_notifier.notify_song_already_in_queue(spotify_song_info)
+    def __init__(self, chat_box):
+        super().__init__()
+        self.sp = authenticate()
+        self.osc_notifier = OSCNotifier()
+        self.last_song = None
+        self.chat_box = chat_box
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.main_loop)
+        self.timer.start(2500) # loop every 2.5 seconds
 
-                # Update current song
-                prev_song_name, prev_spotify_song_info = song_name, spotify_song_info
+    def main_loop(self):
+        left, top, box_width, box_height = calculate_bounding_box(SCALE, HEIGHT_SCALE, WIDTH_SCALE)
+        screenshot = capture_screen(left, top, box_width, box_height)
+        potential_song = process_image(screenshot)
+        print(potential_song)
 
-            message_filename = 'vrc/message.txt'
-            clear_after_read = True
-            if os.path.exists(message_filename):
-                with open(message_filename, 'r') as f:
-                    custom_message = f.read().strip()
-                    if custom_message != "":
-                        subprocess.Popen(command, shell=True)
-                        time.sleep(0.5)
-                if clear_after_read:
-                    # Clear the message file after reading it
-                    with open(message_filename, 'w') as f:
-                        pass
-            else:
-                custom_message = ""
+        if potential_song and potential_song != self.last_song:
+            song_id, song_name = search_song(self.sp, potential_song)
 
-            # Update the chat in VRChat and sleep for 2.5 seconds
-            if custom_message:
-                vrc_notifier.send_custom_message(custom_message)
-            else:
-                vrc_notifier.send_custom_message(f"Please help me test this. Type: \"@@song name\" in front of me. Last Added: {prev_spotify_song_info}")
-            
-            time.sleep(2.5)
+            if song_id is not None:
+                song_in_queue = check_song_in_queue(self.sp, song_id)
 
-    except KeyboardInterrupt:
-        print("Program interrupted.")
-        
-    finally:
-        root.destroy()
+                if not song_in_queue:
+                    add_song_to_queue(self.sp, song_id)
+                    self.new_song_signal.emit(song_name)
+        self.last_song = potential_song
+
+        new_messages = self.chat_box.get_new_messages()
+        for message in new_messages:
+            tts = TTSPlayer(message)
+            tts.play_in_background()
+        self.chat_box.clear_messages()
 
 if __name__ == "__main__":
-    main()
+    app = QApplication(sys.argv)
+
+    overlay = Overlay(SCALE, HEIGHT_SCALE, WIDTH_SCALE)
+    chat_box = ChatBox()
+
+    overlay.show()
+    chat_box.show()
+
+    main_app = MainApp(chat_box)
+    main_app.new_song_signal.connect(main_app.osc_notifier.notify_song_added)
+
+    sys.exit(app.exec_())
