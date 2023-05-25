@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QLineEdit, QLabel, QDesktopWidget, QApplication
 from PyQt5.QtGui import QPainter, QPen
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 import screeninfo
 
 # def calculate_bounding_box(scale: float=1, height_scale: float=1,width_scale: float=1):
@@ -63,11 +63,13 @@ class Overlay(QWidget):
 
         
 class ChatBox(QWidget):
+    new_message_signal = pyqtSignal(str)
+    clear_messages_signal = pyqtSignal()
+    
     def __init__(self):
         super().__init__()
 
-        self.messages = []
-        self.layout = QVBoxLayout() # type: ignore
+        self.layout = QVBoxLayout()
 
         # Add the text display area
         self.text_display = QTextEdit()
@@ -84,17 +86,13 @@ class ChatBox(QWidget):
     def submit_message(self):
         message = self.text_entry.text()
         if message:
-            self.messages.append(message)
             self.text_display.append(message)
             self.text_entry.clear()
+            self.new_message_signal.emit(message)
             print(f'New message: {message}')
-
-    def get_new_messages(self):
-        return self.messages
 
     def clear_messages(self):
         self.text_display.clear()
-        self.messages = []
 
 if __name__ == '__main__':
     app = QApplication([])

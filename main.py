@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QTimer, pyqtSignal, QObject
+from PyQt5.QtCore import QTimer, pyqtSignal, QObject, QThread
 from PyQt5.QtWidgets import QApplication
 from vrc.osc_notifier import OSCNotifier
 from gui.overlay import Overlay, ChatBox, calculate_bounding_box
@@ -27,8 +27,17 @@ class TTSPlayer:
         p = Process(target=self.play_text)
         p.start()
 
+class Worker(QObject):
+    def __init__(self, main_app):
+        super().__init__()
+        self.main_app = main_app
+
+    def work(self):
+        self.main_app.main_loop()
+
 class MainApp(QObject):
     new_song_signal = pyqtSignal(str)
+    started = pyqtSignal()
 
     def __init__(self, chat_box):
         super().__init__()
@@ -39,6 +48,20 @@ class MainApp(QObject):
         self.timer = QTimer()
         self.timer.timeout.connect(self.main_loop)
         self.timer.start(2500) # loop every 2.5 seconds
+        self.chat_box.new_message_signal.connect(self.process_message)
+        self.chat_box.clear_messages_signal.connect(self.chat_box.clear_messages)
+    
+    def start(self):
+        self.thread = QThread()
+        self.worker = Worker(self)
+        self.worker.moveToThread(self.thread)
+        self.thread.started.connect(self.worker.work)
+        self.started.connect(self.thread.start)
+        self.started.emit()  # Emit the signal to start the worker thread
+
+    def process_message(self, message):
+        tts = TTSPlayer(message)
+        tts.play_in_background()
 
     def main_loop(self):
         left, top, box_width, box_height = calculate_bounding_box(SCALE, HEIGHT_SCALE, WIDTH_SCALE)
@@ -57,22 +80,17 @@ class MainApp(QObject):
                     self.new_song_signal.emit(song_name)
         self.last_song = potential_song
 
-        new_messages = self.chat_box.get_new_messages()
-        for message in new_messages:
-            tts = TTSPlayer(message)
-            tts.play_in_background()
-        self.chat_box.clear_messages()
-
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     overlay = Overlay(SCALE, HEIGHT_SCALE, WIDTH_SCALE)
     chat_box = ChatBox()
 
-    overlay.show()
-    chat_box.show()
-
     main_app = MainApp(chat_box)
     main_app.new_song_signal.connect(main_app.osc_notifier.notify_song_added)
+    main_app.start()  # Call the start method to start the worker thread
+
+    overlay.show()
+    chat_box.show()
 
     sys.exit(app.exec_())
