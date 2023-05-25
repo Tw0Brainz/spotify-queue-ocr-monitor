@@ -52,7 +52,7 @@ class MainApp(QObject):
         self.chat_box.clear_messages_signal.connect(self.chat_box.clear_messages)
     
     def start(self):
-        self.thread = QThread()
+        self.thread = QThread() # type: ignore
         self.worker = Worker(self)
         self.worker.moveToThread(self.thread)
         self.thread.started.connect(self.worker.work)

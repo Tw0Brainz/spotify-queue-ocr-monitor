@@ -1,7 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QLineEdit, QLabel, QDesktopWidget, QApplication
-from PyQt5.QtGui import QPainter, QPen
 from PyQt5.QtCore import Qt, pyqtSignal
-import screeninfo
 
 # def calculate_bounding_box(scale: float=1, height_scale: float=1,width_scale: float=1):
 #     """Calculate the parameters of a bounding box at the center of the main monitor.
@@ -69,12 +67,13 @@ class ChatBox(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.layout = QVBoxLayout()
+        self.layout = QVBoxLayout() # type: ignore
 
         # Add the text display area
         self.text_display = QTextEdit()
         self.text_display.setReadOnly(True)
         self.layout.addWidget(self.text_display)
+
 
         # Add a text entry field
         self.text_entry = QLineEdit()
@@ -82,6 +81,31 @@ class ChatBox(QWidget):
         self.layout.addWidget(self.text_entry)
 
         self.setLayout(self.layout)
+        
+        self.setGeometry(500,500,480,240)
+        
+        self.setStyleSheet("""
+            ChatBox {
+                background-color: #1e2124;
+                border: 1px solid #7289da;
+                border-radius: 12px;
+                color:#1e2124;
+            }
+            QTextEdit {
+                background-color: #1e2124;
+                border: 1px solid #7289da;
+                border-radius: 5px;
+                padding: 8px;
+                color: white;
+            }
+            QLineEdit {
+                background-color: #1e2124;
+                border: 1px solid #7289da;
+                border-radius: 5px;
+                padding: 8px;
+                color: white;
+            }
+        """)
 
     def submit_message(self):
         message = self.text_entry.text()
