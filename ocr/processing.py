@@ -40,13 +40,14 @@ class OcrThread(QThread):
         image = image.convert('1')
         self.extract_song_name(image)
         
+        
     def extract_song_name(self, image):
         # set the path to the tesseract executable if needed
         # pytesseract.pytesseract.tesseract_cmd = r'path_to_your_tesseract_exe'
         
         # apply OCR on the screenshot
         # --psm 6 is the page segmentation mode for a single uniform block of text
-        text: str = pytesseract.image_to_string(image,config="--psm 6")
+        text = pytesseract.image_to_string(image,config="--psm 6")
         # normalize text
         text = text.lower()
         text = ' '.join(text.split("\n"))
@@ -62,7 +63,7 @@ class OcrThread(QThread):
                 self.potential_song_found.emit(song_name)
                 self.last_input = song_name
                 self.new_song_found.emit(song_name)
-                print(f'New song found: {song_name.title()}')
+                print(f'New song found: {song_name}')
     def run(self):
         while True:
             self.capture_screen()
