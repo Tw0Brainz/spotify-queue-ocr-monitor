@@ -1,42 +1,9 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QLineEdit, QLabel, QDesktopWidget, QApplication
 from PyQt5.QtCore import Qt, pyqtSignal
-
-# def calculate_bounding_box(scale: float=1, height_scale: float=1,width_scale: float=1):
-#     """Calculate the parameters of a bounding box at the center of the main monitor.
-
-#     Args:
-#         scale (float): Scaling factor for the size of the bounding box
-#         height_scale (float): Scaling factor for the size of the height
-#         width_scale (float): Scaling factor for the size of the width
-
-#     Returns:
-#         left (int): The horizontal coordinate of the top-left corner of the bounding box
-#         top (int): The vertical coordinate of the top-left corner of the bounding box
-#         box_width (int): The width of the bounding box
-#         box_height (int): The height of the bounding box
-#     """
-#     monitor = screeninfo.get_monitors()[0]
-#     box_width = int(round(monitor.width * scale * width_scale))
-#     box_height = int(round(monitor.height * scale * height_scale))
-#     left = int(round((monitor.width - box_width) // 2))
-#     top = int(round((monitor.height - box_height) // 2))
-#     return left, top, box_width, box_height
-
-
-def calculate_bounding_box(scale:float =1, height_scale:float =1, width_scale:float =1):
-    # Get the size of the screen
-    screen_size = QDesktopWidget().screenGeometry(-1)
-
-    # Calculate width and height based on scale
-    width = screen_size.width() * scale * width_scale
-    height = screen_size.height() * scale * height_scale
-
-    # Calculate left and top coordinates for centering the overlay
-    left = (screen_size.width() - width) // 2
-    top = (screen_size.height() - height) // 2
-
-    return [int(var) for var in [left, top, width, height]]
-
+import os,sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+from util.utils import calculate_bounding_box
 
 class Overlay(QWidget):
     def __init__(self, scale: float=1, height_scale: float=1, width_scale: float=1, border_thickness: int=3):
@@ -58,11 +25,12 @@ class Overlay(QWidget):
         self.setLayout(layout)
         
         self.setStyleSheet(f"border: {border_thickness}px solid yellow; background-color: rgba(0, 0, 0, 0);")
+        
+        self.show()
 
         
 class ChatBox(QWidget):
     new_message_signal = pyqtSignal(str)
-    clear_messages_signal = pyqtSignal()
     
     def __init__(self):
         super().__init__()

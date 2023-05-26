@@ -4,5 +4,4 @@ Pillow==9.5.0
 pytesseract==0.3.10
 python-dotenv==1.0.0
 python-osc==1.8.1
-screeninfo==0.8.1
 spotipy==2.23.0
