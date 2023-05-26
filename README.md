@@ -3,7 +3,7 @@ Spotify Queue OCR Monitor
 
 Spotify Queue OCR Monitor is a Python project that uses optical character recognition (OCR) to monitor a designated area of your screen for song names in an in-game chat format. When a song name is detected, the program automatically searches for the song on Spotify and adds it to your queue if it's not already there.
 
-This project combines the power of MSS for screen capturing, PIL for image processing, Tesseract OCR for optical character recognition, and Spotipy to interact with the Spotify Web API.
+This project combines the power of MSS for screen capturing, PIL for image processing, Tesseract OCR for optical character recognition, Spotipy to interact with the Spotify Web API, as well as PyQt5 for the GUI overlay and live chatbox-to-TTS, as well as Python-OSC for VRC chatbox notifications.
 
 ## Getting Started
 ---------------
@@ -37,7 +37,7 @@ Open or create a file named `.env` in the root directory of the project and add 
 
 ### Setting Up Tesseract OCR
 
-This project uses Tesseract OCR(Version 5.3.1) via pytesseract. Please ensure that [Tesseract OCR](https://github.com/UB-Mannheim/tesseract/wiki) is correctly installed on your system and pytesseract is correctly configured. If Tesseract OCR is installed at a non-standard location, make sure to update the `tesseract_cmd` variable in `ocr/process.py`:
+This project uses Tesseract OCR(Version 5.3.1) via pytesseract. Please ensure that [Tesseract OCR](https://github.com/UB-Mannheim/tesseract/wiki) is correctly installed on your system and pytesseract is correctly configured. If Tesseract OCR is installed at a non-standard location, make sure to update the `tesseract_cmd` variable in `ocr/processing.py`:
 
     pytesseract.pytesseract.tesseract_cmd = r'path_to_your_tesseract_exe'
     
@@ -57,11 +57,11 @@ The program creates a yellow overlay on your screen to indicate the area that is
 
 ### Spotify API Calls
 
-The Spotipy library is used to make Spotify API calls to search for songs, verify if they are already in your queue, and add them to your queue if they are not. These actions are defined in `spotify/api.py`.
+The Spotipy library is used to make Spotify API calls to search for songs, verify if they are already in your queue, and add them to your queue if they are not. These actions are defined in `spotify/auth.py`.
 
 ### OCR Processing
 
-The program uses MSS and PIL for capturing and processing screenshots, along with Tesseract OCR via pytesseract to extract text from them. The image capture and processing functionalities are defined in the `ocr/capture.py` module.
+The program uses MSS and PIL for capturing and processing screenshots, along with Tesseract OCR via pytesseract to extract text from them. The image capture and processing functionalities are defined in the `ocr/processing.py` module.
 
 ### VRC OSC Chatbox Notifications
 
@@ -69,13 +69,13 @@ The program uses Python-OSC to send chatbox messages providing status updates as
 
 Running Tests
 -------------
-
+TODO: Add tests
 You can run tests to validate the OCR and Spotify functionalities using:`./tests.bat`
 
 ### All-in-One Setup
 Note, you will need to have a Spotify account and a registered Spotify App to run the test, your .env file populated with those values from Spotify, and Tesseract OCR installed and configured correctly.
 ```bash
-git clone https://github.com/tw0brainz/spotify-queue-ocr-monitor.git && cd spotify-queue-ocr-monitor && ./setup.bat && ./tests.bat
+git clone https://github.com/tw0brainz/spotify-queue-ocr-monitor.git && cd spotify-queue-ocr-monitor && ./setup.bat
 ```
 
 Contributing to Spotify Queue OCR Monitor
