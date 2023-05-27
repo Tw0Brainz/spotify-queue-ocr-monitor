@@ -1,17 +1,21 @@
-import spotipy, os
-from dotenv import load_dotenv
-from spotipy.oauth2 import SpotifyOAuth
 from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtWidgets import QApplication
+from spotipy.oauth2 import SpotifyOAuth
+from dotenv import load_dotenv
+import spotipy, os, sys
 
 class SpotifyQThread(QThread):
     
     song_added_to_queue = pyqtSignal(str)
     song_already_in_queue = pyqtSignal(str)
+    spotify_error = pyqtSignal(str)
     
     def __init__(self):
         super().__init__()
         self.last_song: dict = {}
         self.sp = self.authenticate()
+        self.error_prefix = '<font color=\"red\">ERROR:</font>{}'
+
         
     def authenticate(self):
 
@@ -56,7 +60,7 @@ class SpotifyQThread(QThread):
         
         if queue:
             if not queue['queue'] and not queue['currently_playing']:
-                raise Exception("Please make sure Spotify is open and a song is playing")
+                self.spotify_error.emit(self.error_prefix.format("Please make sure your Spotify is open and playing a song!"))  
             else:
                 queue_check = [item['id'] for item in queue['queue']] + [queue['currently_playing']['id']]
                 if song_id not in queue_check:
@@ -69,9 +73,10 @@ class SpotifyQThread(QThread):
             self.sp.add_to_queue(song_id)
             self.song_added_to_queue.emit(self.last_song[song_id])
         except Exception as e:
-            print(f"Error adding song to queue: {e}")
+            self.spotify_error.emit(self.error_prefix.format(e))
 
 if __name__ == "__main__":
+    app = QApplication(sys.argv)
     sp = SpotifyQThread()
     sp.start()
     sp.song_search("psychosocial")

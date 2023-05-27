@@ -1,5 +1,9 @@
-from pythonosc import udp_client
+from pythonosc import udp_client, dispatcher, osc_server
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer, pyqtSlot, QMutex
+from PyQt5.QtWidgets import QWidget
+import threading, json, time
+from pythonosc.udp_client import SimpleUDPClient
+from typing import Dict, List
 
 class OSCNotifier(QThread):
     song_added_signal = pyqtSignal(str)
@@ -55,3 +59,58 @@ class OSCNotifier(QThread):
     
     def clear_chat(self):
         self.client.send_message("/chatbox/input", ["",True,False])
+        
+class OSCListener(QThread):
+    def __init__(self, ip="127.0.0.1", port=9001):
+        super().__init__()
+        self._dispatcher = dispatcher.Dispatcher()
+        self._dispatcher.map("/*", self.print_all)
+        
+        self._server = osc_server.ThreadingOSCUDPServer((ip, port), self._dispatcher)
+        print("Serving on {}".format(self._server.server_address))
+        
+    def print_all(self, address, *args):
+        print(f"OSC message received on {address} with arguments: {args}")
+
+    def serve_forever(self):
+        self._server.serve_forever()
+        
+class AvatarParameterChanger(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.parameters = {
+            "huehair" : [0.5, 0.43],
+            "hueHighlights" : [0.5, 0.43],
+            "huetats" : [0.5, 0.43],
+            "hueclothes1" : [0.5, 0.43],
+            "hueclothes2" : [0.5, 0.43],
+            "hueMetal" : [0.5, 0.43],
+            
+        }
+        self.client = SimpleUDPClient("127.0.0.1", 9000)
+
+    def temporary_change_parameters(self):
+        for key, values in self.parameters.items():
+            self.send_osc_message(key, values[1])
+        
+        # Set a timer to reset parameters after duration
+        QTimer.singleShot(int(2.5 * 1000), self.reset_parameters_to_default)
+
+    def reset_parameters_to_default(self):
+        for key, values in self.parameters.items():
+            self.send_osc_message(key, values[0])
+
+    def send_osc_message(self, address: str, value: float):
+        self.client.send_message("/avatar/parameters/"+address, value)
+        
+if __name__=="__main__":
+    from PyQt5.QtWidgets import QApplication
+    import sys
+    app = QApplication(sys.argv)
+    # listener = OSCListener()
+    param_changer = AvatarParameterChanger()
+    param_changer.temporary_change_parameters()
+    # listener.serve_forever()
+    app.exec_()
+    
+  

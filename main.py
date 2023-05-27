@@ -1,47 +1,55 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.QtCore import pyqtSlot
-from gui.overlay import Overlay,ChatBox
+from PyQt5.QtCore import pyqtSlot, QRect
+from gui.overlay import Overlay
+from gui.chatbox import ChatBox
 from ocr.processing import OcrThread
 from spotify.auth import SpotifyQThread
-from vrc.osc_notifier import OSCNotifier
+from vrc.osc_notifier import OSCNotifier, AvatarParameterChanger
 from util.utils import TTSPlayer
-import sys
-        
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        # Instantiate your classes
-        scale, height_scale, width_scale = 0.2, 0.75, 1
+        # Instantiate classes
         self.chatbox = ChatBox()
-        self.overlay = Overlay(scale=scale,height_scale=height_scale,width_scale=width_scale,border_thickness=3)  # Pass in necessary parameters
-        self.ocr_thread = OcrThread(scale,height_scale,width_scale)  # Pass in necessary parameters
+        initial_capture_area = self.chatbox.output_area
+        self.overlay = Overlay(initial_capture_area, border_thickness=3)
+        self.ocr_thread = OcrThread(initial_capture_area)
         self.spotify_thread = SpotifyQThread()
-        self.osc_notifier = OSCNotifier()  # Pass in necessary parameters if not default
-        self.tts_player = None  # Initialize to None, will be created with new TTS text
+        self.osc_notifier = OSCNotifier()
+        self.avatar_changer = AvatarParameterChanger()
+        self.tts_player = None
 
         # Connect signals and slots
         self.chatbox.new_message_signal.connect(self.handle_new_message)
-        
-        self.chatbox.new_message_signal.connect(self.osc_notifier.custom_message_signal)
+        self.chatbox.capture_area_updated_signal.connect(self.update_capture_area)
+
+        self.chatbox.new_message_signal.connect(self.osc_notifier.send_custom_message)
+        self.spotify_thread.spotify_error.connect(self.chatbox.receive_error)
         self.spotify_thread.song_added_to_queue.connect(self.osc_notifier.song_added_signal)
-        
+        self.spotify_thread.song_added_to_queue.connect(self.avatar_changer.temporary_change_parameters)
+
         self.ocr_thread.potential_song_found.connect(self.spotify_thread.song_search)
 
         # Start the OCR thread
         self.ocr_thread.start()
         self.osc_notifier.start()
 
-        # Set the chatbox as the central widget
-        self.setCentralWidget(self.chatbox)
-
     @pyqtSlot(str)
     def handle_new_message(self, message: str):
         self.tts_player = TTSPlayer(message)
         self.tts_player.run()
 
+    @pyqtSlot(QRect)
+    def update_capture_area(self, new_capture_area: QRect):
+        self.overlay.setGeometry(new_capture_area)
+        self.ocr_thread.update_capture_area(new_capture_area)
+
+
 if __name__ == '__main__':
+    import sys
     app = QApplication(sys.argv)
     window = MainWindow()
-    window.show()
     sys.exit(app.exec_())

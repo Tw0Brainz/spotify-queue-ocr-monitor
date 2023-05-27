@@ -1,22 +1,6 @@
-from PyQt5.QtWidgets import QDesktopWidget
 from PyQt5.QtCore import QThread
-import subprocess,os,sys
-
-
-
-def calculate_bounding_box(scale:float =1, height_scale:float =1, width_scale:float =1):
-    # Get the size of the screen
-    screen_size = QDesktopWidget().screenGeometry(-1)
-
-    # Calculate width and height based on scale
-    width = screen_size.width() * scale * width_scale
-    height = screen_size.height() * scale * height_scale
-
-    # Calculate left and top coordinates for centering the overlay
-    left = (screen_size.width() - width) // 2
-    top = (screen_size.height() - height) // 2
-
-    return [int(var) for var in [left, top, width, height]]
+from PyQt5.QtWidgets import QApplication
+import subprocess,os
 
 class TTSPlayer(QThread):
     def __init__(self, text):
@@ -30,3 +14,7 @@ class TTSPlayer(QThread):
         # uses a separate process to play the text
         subprocess.Popen(self.command)
         
+if __name__ == "__main__":
+    app = QApplication([])
+    player = TTSPlayer("Hello world")
+    player.run()
