@@ -1,8 +1,5 @@
 from pythonosc import udp_client
-from PyQt5.QtCore import QThread, pyqtSignal, QTimer
-from PyQt5.QtCore import pyqtSlot, QMutex
-import time
-
+from PyQt5.QtCore import QThread, pyqtSignal, QTimer, pyqtSlot, QMutex
 
 class OSCNotifier(QThread):
     song_added_signal = pyqtSignal(str)
@@ -19,7 +16,6 @@ class OSCNotifier(QThread):
         self.default_message = f"Type: \"@@song name\" in front of me to add a song to queue. Last Song: {self.last_song_added}"
         
         self.song_added_signal.connect(self.on_song_added)
-        self.song_already_in_queue_signal.connect(self.on_duplicate_song)
         self.custom_message_signal.connect(self.send_custom_message)
         self.clear_chat_signal.connect(self.clear_chat)
         
@@ -27,34 +23,35 @@ class OSCNotifier(QThread):
         self.timer.timeout.connect(self.handle_message_queue)
         self.handle_message_queue()
 
-       
+    
     @pyqtSlot(str)
-    def on_duplicate_song(self, song_name):
-        self.mutex.lock()
-        self.message_queue.append(song_name)
-        self.mutex.unlock()
-    
     def send_custom_message(self, message):
-        self.client.send_message("/chatbox/input", [message,True,False])
-    
-    def clear_chat(self):
-        self.client.send_message("/chatbox/input", ["",True,False])
+        self.mutex.lock()
+        self.message_queue.append(message)
+        self.mutex.unlock()
     
     @pyqtSlot(str)
     def on_song_added(self, message):
         self.mutex.lock()
         self.message_queue.append(message + " added to queue!")
         self.last_song_added = message
+        self.default_message = f"Type: \"@@song name\" in front of me to add a song to queue. Last Song: {self.last_song_added}"
         self.mutex.unlock()
         print(message + " added to queue!")
 
     def handle_message_queue(self):
         if self.message_queue:
-            self.send_custom_message(self.message_queue.pop(0))
+            self.display_message(self.message_queue.pop(0))
             self.timer.start(5000)
         else:
             self.display_default_message()
-            self.timer.start(5000)
+            self.timer.start(2500)
 
     def display_default_message(self):
-        self.send_custom_message(self.default_message)
+        self.display_message(self.default_message)
+
+    def display_message(self, message):
+        self.client.send_message("/chatbox/input", [message,True,False])
+    
+    def clear_chat(self):
+        self.client.send_message("/chatbox/input", ["",True,False])

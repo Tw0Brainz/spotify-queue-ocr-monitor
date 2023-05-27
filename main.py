@@ -12,7 +12,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         # Instantiate your classes
-        scale, height_scale, width_scale = 0.175, 0.75, 1
+        scale, height_scale, width_scale = 0.2, 0.75, 1
         self.chatbox = ChatBox()
         self.overlay = Overlay(scale=scale,height_scale=height_scale,width_scale=width_scale,border_thickness=3)  # Pass in necessary parameters
         self.ocr_thread = OcrThread(scale,height_scale,width_scale)  # Pass in necessary parameters
@@ -25,7 +25,6 @@ class MainWindow(QMainWindow):
         
         self.chatbox.new_message_signal.connect(self.osc_notifier.custom_message_signal)
         self.spotify_thread.song_added_to_queue.connect(self.osc_notifier.song_added_signal)
-        self.spotify_thread.song_already_in_queue.connect(self.osc_notifier.song_already_in_queue_signal)
         
         self.ocr_thread.potential_song_found.connect(self.spotify_thread.song_search)
 
