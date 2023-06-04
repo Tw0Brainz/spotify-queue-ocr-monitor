@@ -12,7 +12,6 @@ class ChatBox(QWidget):
         self.output_area = QRect()
         self.setupUI()
         self.output_rect()
-        self.show()
         self.setGeometry(
             self.output_area.right(),
             self.output_area.center().y() - self.windowHeight // 2,
@@ -37,6 +36,7 @@ class ChatBox(QWidget):
     def setupLogs(self):
         log_display = QTextEdit()
         log_display.setReadOnly(True)
+        log_display.setFixedHeight(100)
         self.layout.addWidget(log_display)
         return log_display
         
@@ -104,7 +104,7 @@ class ChatBox(QWidget):
         left = self.default_screen.width() * (1 - scale) / 2
         top = self.default_screen.height() * (1 - scale) / 2
         width = self.default_screen.width() * scale
-        height = self.default_screen.height() * scale *(2/3)
+        height = self.default_screen.height() * scale
         self.output_area = QRect(int(left), int(top), int(width), int(height))
         self.capture_area_updated_signal.emit(self.output_area)
         

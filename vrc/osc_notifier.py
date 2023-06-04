@@ -17,7 +17,7 @@ class OSCNotifier(QThread):
         self.message_queue = []
         self.mutex = QMutex()  # Lock to synchronize access to message_queue
         self.last_song_added = ""
-        self.default_message = f"Type: \"@@song name\" in front of me to add a song to queue. Last Song: {self.last_song_added}"
+        self.default_message = f"Type: \"#song name\" in front of me to add a song to queue. Last Song: {self.last_song_added}"
         
         self.song_added_signal.connect(self.on_song_added)
         self.custom_message_signal.connect(self.send_custom_message)
@@ -39,7 +39,7 @@ class OSCNotifier(QThread):
         self.mutex.lock()
         self.message_queue.append(message + " added to queue!")
         self.last_song_added = message
-        self.default_message = f"Type: \"@@song name\" in front of me to add a song to queue. Last Song: {self.last_song_added}"
+        self.default_message = f"Type: \"#song name\" in front of me to add a song to queue. Last Song: {self.last_song_added}"
         self.mutex.unlock()
         print(message + " added to queue!")
 
@@ -79,12 +79,12 @@ class AvatarParameterChanger(QWidget):
     def __init__(self):
         super().__init__()
         self.parameters = {
-            "huehair" : [0.5, 0.43],
-            "hueHighlights" : [0.5, 0.43],
-            "huetats" : [0.5, 0.43],
-            "hueclothes1" : [0.5, 0.43],
-            "hueclothes2" : [0.5, 0.43],
-            "hueMetal" : [0.5, 0.43],
+            "huehair" : [1.0, 0.43],
+            "hueHighlights" : [1.0, 0.43],
+            "huetats" : [1.0, 0.43],
+            "hueclothes1" : [1.0, 0.43],
+            "hueclothes2" : [1.0, 0.43],
+            "hueMetal" : [1.0, 0.43],
             
         }
         self.client = SimpleUDPClient("127.0.0.1", 9000)

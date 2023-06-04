@@ -6,17 +6,18 @@ from ocr.processing import OcrThread
 from spotify.auth import SpotifyQThread
 from vrc.osc_notifier import OSCNotifier, AvatarParameterChanger
 from util.utils import TTSPlayer
+import sys
 
 
-class MainWindow(QMainWindow):
+class MainApplication(QApplication):
     def __init__(self):
-        super().__init__()
-
+        super().__init__(sys.argv)
         # Instantiate classes
         self.chatbox = ChatBox()
-        initial_capture_area = self.chatbox.output_area
-        self.overlay = Overlay(initial_capture_area, border_thickness=3)
-        self.ocr_thread = OcrThread(initial_capture_area)
+        self.chatbox.show()
+        self.overlay = Overlay(self.chatbox.output_area, border_thickness=1)
+        self.overlay.show()
+        self.ocr_thread = OcrThread(self.chatbox.output_area)
         self.spotify_thread = SpotifyQThread()
         self.osc_notifier = OSCNotifier()
         self.avatar_changer = AvatarParameterChanger()
@@ -49,7 +50,5 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == '__main__':
-    import sys
-    app = QApplication(sys.argv)
-    window = MainWindow()
+    app = MainApplication()
     sys.exit(app.exec_())

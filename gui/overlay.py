@@ -23,7 +23,6 @@ class Overlay(QWidget):
         
         self.setStyleSheet(f"border: {border_thickness}px solid yellow; background-color: rgba(0, 0, 0, 0);")
         
-        self.show()
         
 
 if __name__ == '__main__':
