@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import pyqtSlot, QRect
 from gui.overlay import Overlay
 from gui.chatbox import ChatBox
@@ -24,10 +24,10 @@ class MainApplication(QApplication):
         self.tts_player = None
 
         # Connect signals and slots
-        self.chatbox.new_message_signal.connect(self.handle_new_message)
-        self.chatbox.capture_area_updated_signal.connect(self.update_capture_area)
+        self.chatbox.new_message_signal.connect(self.handle_new_message) # type: ignore
+        self.chatbox.capture_area_updated_signal.connect(self.update_capture_area) # type: ignore
 
-        self.chatbox.new_message_signal.connect(self.osc_notifier.send_custom_message)
+        self.chatbox.new_message_signal.connect(self.osc_notifier.send_custom_message) # type: ignore
         self.spotify_thread.spotify_error.connect(self.chatbox.receive_error)
         self.spotify_thread.song_added_to_queue.connect(self.osc_notifier.song_added_signal)
         self.spotify_thread.song_added_to_queue.connect(self.avatar_changer.temporary_change_parameters)
