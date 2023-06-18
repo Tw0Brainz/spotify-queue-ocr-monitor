@@ -6,4 +6,5 @@ PyQt5_sip==12.12.1
 python-dotenv==1.0.0
 python_osc==1.8.1
 spotipy==2.23.0
+PyQt5-stubs==5.15.6.0
 edge-tts @ git+https://github.com/Tw0Brainz/edge-tts-ffmpeg
