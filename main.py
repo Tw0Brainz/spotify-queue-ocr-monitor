@@ -28,6 +28,8 @@ class MainApplication(QApplication):
         self.chatbox.capture_area_updated_signal.connect(self.update_capture_area) # type: ignore
 
         self.chatbox.new_message_signal.connect(self.osc_notifier.send_custom_message) # type: ignore
+        self.chatbox.process_ocr_signal.connect(self.ocr_thread.update_process_ocr) # type: ignore
+        self.chatbox.process_ocr_signal.connect(self.overlay.update_ocr_state_color) # type: ignore
         self.spotify_thread.spotify_error.connect(self.chatbox.receive_error)
         self.spotify_thread.spotify_song_added_log.connect(self.chatbox.receive_error)
         self.spotify_thread.song_added_to_queue.connect(self.osc_notifier.song_added_signal)

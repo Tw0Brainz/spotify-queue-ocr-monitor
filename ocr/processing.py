@@ -13,10 +13,15 @@ class OcrThread(QThread):
         self.capture_area = capture_area
         self.last_input = None
         self.reader = easyocr.Reader(['en'], gpu=True)
+        self.process_ocr = True
 
     def update_capture_area(self, new_capture_area: QRect):
         with QMutexLocker(self.locker):
             self.capture_area = new_capture_area
+            
+    def update_process_ocr(self, state: bool):
+        with QMutexLocker(self.locker):
+            self.process_ocr = state
 
     def capture_screen(self):
         with mss() as sct:
@@ -52,5 +57,6 @@ class OcrThread(QThread):
 
     def run(self):
         while True:
-            self.capture_screen()
-            self.msleep(1500)
+            if self.process_ocr:
+                self.capture_screen()
+                self.msleep(1500)

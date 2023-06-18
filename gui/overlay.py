@@ -6,8 +6,8 @@ class Overlay(QWidget):
     def __init__(self,initial_area: QRect,border_thickness: int=3):
         super().__init__()
 
-        # Calculate the size and position of the overlay
-
+        self.border_thickness = border_thickness
+        
         # Set the window geometry (position and size)
         self.setGeometry(initial_area)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)
@@ -22,6 +22,12 @@ class Overlay(QWidget):
         self.setLayout(layout)
         
         self.setStyleSheet(f"border: {border_thickness}px solid yellow; background-color: rgba(0, 0, 0, 0);")
+    
+    def update_ocr_state_color(self, bool):
+        if bool:
+            self.setStyleSheet(f"border: {self.border_thickness}px solid yellow; background-color: rgba(0, 0, 0, 0);")
+        else:
+            self.setStyleSheet(f"border: {self.border_thickness}px solid red; background-color: rgba(0, 0, 0, 0);")
         
         
 

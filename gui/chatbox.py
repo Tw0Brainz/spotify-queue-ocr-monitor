@@ -1,10 +1,11 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QLineEdit, QApplication, QSlider
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QLineEdit, QApplication, QSlider, QHBoxLayout, QCheckBox
 from PyQt5.QtCore import Qt, pyqtSignal, QRect
 import sys
         
 class ChatBox(QWidget):
     new_message_signal = pyqtSignal(str)
     capture_area_updated_signal = pyqtSignal(QRect)
+    process_ocr_signal = pyqtSignal(bool)
     
     def __init__(self):
         super().__init__()
@@ -54,12 +55,27 @@ class ChatBox(QWidget):
         return text_entry
 
     def setupSlider(self):
+        # Create a horizontal layout
+        slider_layout = QHBoxLayout()
+
+        # Create a checkbox
+        checkbox = QCheckBox("OCR")
+        slider_layout.addWidget(checkbox)
+        checkbox.setChecked(True)
+        # Output true or false when the checkbox is clicked
+        checkbox.stateChanged.connect(lambda: self.process_ocr_signal.emit(checkbox.isChecked()))
+        
+        # Create a slider
         rect_scale_slider = QSlider(Qt.Horizontal)
         rect_scale_slider.setMinimum(1)
         rect_scale_slider.setMaximum(100)
         rect_scale_slider.setValue(25)
         rect_scale_slider.valueChanged.connect(self.output_rect)
-        self.layout.addWidget(rect_scale_slider)
+        slider_layout.addWidget(rect_scale_slider)
+
+        # Add the horizontal layout to the main layout
+        self.layout.addLayout(slider_layout)
+
         return rect_scale_slider
 
     def getStyleSheet(self):
@@ -82,6 +98,9 @@ class ChatBox(QWidget):
                 border: 1px solid #7289da;
                 border-radius: 5px;
                 padding: 8px;
+                color: white;
+            }
+            QCheckBox {
                 color: white;
             }
         """
