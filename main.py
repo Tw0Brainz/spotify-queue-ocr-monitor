@@ -29,6 +29,7 @@ class MainApplication(QApplication):
 
         self.chatbox.new_message_signal.connect(self.osc_notifier.send_custom_message) # type: ignore
         self.spotify_thread.spotify_error.connect(self.chatbox.receive_error)
+        self.spotify_thread.spotify_song_added_log.connect(self.chatbox.receive_error)
         self.spotify_thread.song_added_to_queue.connect(self.osc_notifier.song_added_signal)
         self.spotify_thread.song_added_to_queue.connect(self.avatar_changer.temporary_change_parameters)
 

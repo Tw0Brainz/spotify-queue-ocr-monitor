@@ -40,7 +40,7 @@ class OcrThread(QThread):
         if text:
             pattern = r'#(.*)'
             for text_line in text:
-                match = re.search(pattern, text_line) # type: ignore
+                match = re.search(pattern, text_line.strip()) # type: ignore
                 if match:
                     potential_matches.append(match.group(1))
         else:

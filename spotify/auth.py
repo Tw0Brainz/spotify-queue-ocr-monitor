@@ -9,12 +9,14 @@ class SpotifyQThread(QThread):
     song_added_to_queue = pyqtSignal(str)
     song_already_in_queue = pyqtSignal(str)
     spotify_error = pyqtSignal(str)
+    spotify_song_added_log = pyqtSignal(str)
     
     def __init__(self):
         super().__init__()
         self.last_song: dict = {}
         self.sp = self.authenticate()
         self.error_prefix = '<font color=\"red\">ERROR:</font>{}'
+        self.green_prefix = '<font color=\"green\">SPOTIFY:</font>{}'
 
         
     def authenticate(self):
@@ -41,20 +43,20 @@ class SpotifyQThread(QThread):
         return sp
     
     def song_search(self, song_name):
-        results = self.sp.search(q=song_name, limit=1)
-        
-        if results:
-            song_name_result = results['tracks']['items'][0]['name'] if results['tracks']['items'] else self.last_song
+        if len(song_name) > 0:
+            results = self.sp.search(q=song_name, limit=1)
             
-            if results['tracks']['items'] and song_name_result != self.last_song:
-                song_id = results['tracks']['items'][0]['id']
-                song_artist = results['tracks']['items'][0]['artists'][0]['name']
-                self.last_song = {song_id:f"{song_name_result} by {song_artist}"}
-                self.check_song_in_queue(song_id)
-            elif song_name_result == self.last_song:
-                pass
+            if results:
+                song_name_result = results['tracks']['items'][0]['name'] if results['tracks']['items'] else self.last_song
                 
-        
+                if results['tracks']['items'] and song_name_result != self.last_song:
+                    song_id = results['tracks']['items'][0]['id']
+                    song_artist = results['tracks']['items'][0]['artists'][0]['name']
+                    self.last_song = {song_id:f"{song_name_result} by {song_artist}"}
+                    self.check_song_in_queue(song_id)
+                elif song_name_result == self.last_song:
+                    pass
+                
     def check_song_in_queue(self, song_id):
         queue = self.sp.queue()
         
@@ -72,6 +74,7 @@ class SpotifyQThread(QThread):
         try:
             self.sp.add_to_queue(song_id)
             self.song_added_to_queue.emit(self.last_song[song_id])
+            self.spotify_song_added_log.emit(self.green_prefix.format(self.last_song[song_id]))
         except Exception as e:
             self.spotify_error.emit(self.error_prefix.format(e))
 
