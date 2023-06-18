@@ -106,11 +106,46 @@ class ChatBox(QWidget):
         """
 
     def submit_message(self):
-        message = self.text_entry.text()
-        if message:
+        message = self.text_entry.text().strip()
+        
+        if not message:
+            return
+        
+        if message.startswith('/'):
+            self.handle_command(message)
+        else:
             self.text_display.append(message)
             self.text_entry.clear()
             self.new_message_signal.emit(message)
+            
+    def handle_command(self, command: str):
+        # Remove the '/' from the start of the command
+        command = command[1:]
+        low_command = command.lower()
+        
+        try:
+            command2 = ' '.join(command.split(' ')[1:])
+        except ValueError:
+            command2 = ''
+
+        if low_command == 'clear':
+            self.text_display.clear()
+        elif low_command in ['h', 'help','commands']:
+            self.show_help()
+        else:
+            print(f"Unknown command: {command}")
+            
+        self.text_entry.clear()
+
+    def show_help(self):
+        help_text = """
+        <br><p>Available commands:<br><b>
+        /clear - Clear the chat history<br>
+        /help - Show this help text<br>
+        </p></b>
+        """
+        self.text_display.append(help_text)
+        
 
     def receive_error(self, error):
         self.log_display.append(error)
