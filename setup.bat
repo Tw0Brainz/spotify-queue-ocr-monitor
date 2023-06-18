@@ -1,39 +1,39 @@
 @echo off
 
-set "envFile=.env"
+set envFile=.env
 
 REM Check if the .env file exists
-if exist "%envFile%" (
-  echo .env file already exists.
-) else (
-  echo Creating .env file...
-  echo Please enter your Spotify API credentials:
+if exist %envFile% echo .env file already exists. & goto venv_loop
 
-  :client_id_loop
-  set /p client_id="Enter your Spotify client_id: "
-  if "%client_id%"=="" (
-      echo Client ID cannot be empty, please enter the value again.
-      goto client_id_loop
-  )
+echo Creating .env file...
+echo Please enter your Spotify API credentials:
 
-  :client_secret_loop
-  set /p client_secret="Enter your Spotify client_secret: "
-  if "%client_secret%"=="" (
-      echo Client Secret cannot be empty, please enter the value again.
-      goto client_secret_loop
-  )
-
-  set /p redirect_uri="Enter your Spotify redirect_uri (default: http://127.0.0.1:8194): "
-  if "%redirect_uri%"=="" set redirect_uri=http://127.0.0.1:8194
-
-  (
-    echo SPOTIPY_CLIENT_ID="%client_id%"
-    echo SPOTIPY_CLIENT_SECRET="%client_secret%"
-    echo SPOTIPY_REDIRECT_URI="%redirect_uri%"
-  ) > "%envFile%"
-
-  echo .env file has been created or updated with your provided Spotify API credentials.
+:client_id_loop
+set /p client_id="Enter your Spotify client_id: "
+if %client_id%=="" (
+    echo Client ID cannot be empty, please enter the value again.
+    goto client_id_loop
 )
+
+:client_secret_loop
+set /p client_secret="Enter your Spotify client_secret: "
+if %client_secret%=="" (
+    echo Client Secret cannot be empty, please enter the value again.
+    goto client_secret_loop
+)
+
+:redirect_url
+set redirect_uri=""
+set /p redirect_uri="Enter your Spotify redirect_uri (default: http://127.0.0.1:8194): "
+if %redirect_uri%=="" set redirect_uri=http://127.0.0.1:8194
+
+(
+  echo SPOTIPY_CLIENT_ID="%client_id%"
+  echo SPOTIPY_CLIENT_SECRET="%client_secret%"
+  echo SPOTIPY_REDIRECT_URI="%redirect_uri%"
+) > %envFile%
+
+echo .env file has been created with your provided Spotify API credentials.
 
 :venv_loop
 REM Check Python version
@@ -53,11 +53,19 @@ if errorlevel 1 (
 :end
 call venv\Scripts\activate.bat
 
-set /p InstallPyTorch=Do you want to install PyTorch to use your GPU for the OCR processing?? (Y/N): 
-if /I "%InstallPyTorch%"=="Y" (
+set /p intall_pytorch="Do you want to install PyTorch to use your GPU for the OCR processing?? (Y/N): "
+echo %intall_pytorch%
+if /I "%intall_pytorch%"=="Y" (
     call pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+    echo PyTorch has been installed.
+    rem Wait for install to finish and then go to install_requirements
+    goto install_requirements
+) else (
+    echo PyTorch will not be installed.
 )
 
+pause
+:install_requirements
 call pip install -r requirements.txt
 echo Setup complete.
 pause
