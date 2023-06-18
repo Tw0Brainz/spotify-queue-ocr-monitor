@@ -1,9 +1,7 @@
 from pythonosc import udp_client, dispatcher, osc_server
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer, pyqtSlot, QMutex
 from PyQt5.QtWidgets import QWidget
-import threading, json, time
 from pythonosc.udp_client import SimpleUDPClient
-from typing import Dict, List
 
 class OSCNotifier(QThread):
     song_added_signal = pyqtSignal(str)
