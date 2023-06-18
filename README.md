@@ -21,16 +21,11 @@ Clone the project from GitHub and execute the `setup.bat` script by double-click
 
 If Python 3.11 is not installed on your machine, the script will warn you and create the virtual environment using your current Python version. If you run into any issues, please ensure Python 3.11 is installed and try running the script again.
 
-You will also have the option to install PyTorch if you wish to use your GPU for OCR processing. It may be a good idea to edit the `setup.bat` script to change the `torch` package version to match your CUDA version. You can find the correct version [here](https://pytorch.org/get-started/locally/). Just edit the line:<br> 
+You will also have the option to install PyTorch if you wish to use your GPU for OCR processing. It may be a good idea to edit the `setup.bat` script to change the `torch` package version to match your CUDA version before execution. You can find the correct version [here](https://pytorch.org/get-started/locally/). Just edit the line:<br> 
 <b><u>"call pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118"</u></b><br>
  to use what's compatible with your system.
 
 Usage
 -----
 
-Run the \`run.bat\` script. This will activate the virtual environment, install any updated requirements, and run the \`main.py\` file to start the application.
-
-License
--------
-
-This project is licensed under the MIT License.
+Run the `run.bat` script. This will activate the virtual environment, install any updated requirements, and run the `main.py` file to start the application.
